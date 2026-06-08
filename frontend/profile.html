@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - SmartJobFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 1rem;
+        }
+        .profile-card {
+            text-align: center;
+            padding: 2rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .profile-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+        @media (max-width: 900px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo" style="margin-bottom: 2rem; padding-left: 1rem;">JobFinder</div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard-seeker.html"><i class="fas fa-home"></i> Overview</a></li>
+                <li><a href="job-search.html"><i class="fas fa-search"></i> Find Jobs</a></li>
+                <li><a href="my-applications.html"><i class="fas fa-briefcase"></i> My Applications</a></li>
+                <li><a href="skill-gap.html"><i class="fas fa-chart-line"></i> Skill Gap Analyzer</a></li>
+                <li><a href="resume-analyzer.html"><i class="fas fa-file-alt"></i> Resume</a></li>
+                <li><a href="chatbot.html"><i class="fas fa-robot"></i> AI Assistant</a></li>
+                <li><a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-menu" style="flex: 0;">
+                <li><button class="theme-toggle" id="themeToggleBtn" style="padding-left:1rem;"><i class="fas fa-moon"></i> Theme</button></li>
+                <li><a href="#" onclick="API.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div>
+                    <h2><i class="fas fa-user-edit" style="color: var(--primary); margin-right: 0.5rem;"></i> Edit Profile</h2>
+                    <p style="opacity: 0.6; margin-top: 0.25rem; font-size: 0.9rem;">Manage your personal information and skills</p>
+                </div>
+            </header>
+
+            <div class="profile-layout">
+                <!-- Left Sidebar -->
+                <div class="glass-panel profile-card">
+                    <div class="profile-avatar-large" id="avatarDisplay"><i class="fas fa-user"></i></div>
+                    <h3 id="displayName">Loading...</h3>
+                    <p class="text-muted" id="displayRole">Job Seeker</p>
+                    <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+                    <p style="font-size: 0.9rem;"><i class="fas fa-envelope text-primary"></i> <span id="displayEmail">loading@email.com</span></p>
+                </div>
+
+                <!-- Right Form -->
+                <div class="glass-panel">
+                    <div class="alert alert-success" id="profileSuccess" style="display: none; margin-bottom: 1.5rem;">
+                        <i class="fas fa-check-circle"></i> Profile updated successfully!
+                    </div>
+                    <div class="alert alert-danger" id="profileError" style="display: none; margin-bottom: 1.5rem;">
+                        <i class="fas fa-exclamation-circle"></i> <span id="errorMsg">Failed to update</span>
+                    </div>
+
+                    <form class="profile-form" id="profileForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-phone"></i> Phone Number</label>
+                                <input type="text" id="phone" placeholder="+1 234 567 8900">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                                <input type="text" id="location" placeholder="City, Country">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-info-circle"></i> Bio</label>
+                            <textarea id="bio" placeholder="Write a short summary about yourself..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-code"></i> Skills (comma separated)</label>
+                            <input type="text" id="skills" placeholder="JavaScript, React, Node.js...">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="saveBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = checkAuth();
+            if (user) {
+                document.getElementById('displayName').textContent = user.name;
+                document.getElementById('displayEmail').textContent = user.email;
+                document.getElementById('displayRole').textContent = user.role === 'employer' ? 'Employer' : 'Job Seeker';
+                document.getElementById('avatarDisplay').textContent = user.name.charAt(0).toUpperCase();
+
+                // Load existing profile
+                try {
+                    const res = await API.getProfile();
+                    if (res.success && res.data) {
+                        const p = res.data;
+                        document.getElementById('phone').value = p.phone || '';
+                        document.getElementById('location').value = p.location || '';
+                        document.getElementById('bio').value = p.bio || '';
+                        if (p.skills && p.skills.length) {
+                            document.getElementById('skills').value = p.skills.join(', ');
+                        }
+                    }
+                } catch (err) {
+                    console.log("No existing profile found, form is empty.");
+                }
+            }
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            const successDiv = document.getElementById('profileSuccess');
+            const errorDiv = document.getElementById('profileError');
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+            successDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+            const bio = document.getElementById('bio').value;
+            const skillsRaw = document.getElementById('skills').value;
+            
+            const skills = skillsRaw.split(',').map(s => s.trim()).filter(s => s);
+
+            try {
+                const res = await API.updateProfile({ phone, location, bio, skills });
+                if (res.success) {
+                    successDiv.style.display = 'block';
+                } else {
+                    throw new Error(res.error || 'Update failed');
+                }
+            } catch (err) {
+                document.getElementById('errorMsg').textContent = err.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

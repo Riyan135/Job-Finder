@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Profile • SmartJobFinder</title>
+  <link rel="icon" href="img/favicon.png">
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-tr from-indigo-950 via-slate-900 to-indigo-900 text-slate-100 font-inter">
+
+  <div class="flex flex-col md:flex-row min-h-screen">
+    
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-slate-950/80 backdrop-blur-md border-r border-white/10 p-6 flex flex-col justify-between">
+      <div>
+        <div class="mb-8 flex items-center gap-3 border-b border-white/10 pb-6" id="sidebarBrandContainer">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center font-extrabold text-white text-lg shadow-md flex-shrink-0" id="sidebarLogo">
+            C
+          </div>
+          <span class="text-lg font-bold text-white truncate" id="sidebarCompanyName">Company</span>
+        </div>
+        <ul class="space-y-4">
+          <li>
+            <a href="company-dashboard.html" class="flex items-center gap-3 px-4 py-3 text-slate-355 hover:text-white rounded-xl hover:bg-white/5 transition">
+              <i class="fas fa-home text-indigo-400 w-5"></i> Overview
+            </a>
+          </li>
+          <li>
+            <a href="company-post-job.html" class="flex items-center gap-3 px-4 py-3 text-slate-355 hover:text-white rounded-xl hover:bg-white/5 transition">
+              <i class="fas fa-plus-circle text-indigo-400 w-5"></i> Post a Job
+            </a>
+          </li>
+          <li>
+            <a href="company-profile.html" class="flex items-center gap-3 px-4 py-3 text-white rounded-xl bg-indigo-600 font-semibold transition">
+              <i class="fas fa-building text-white w-5"></i> Company Profile
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="pt-6 border-t border-white/10 mt-6 space-y-4">
+        <button onclick="handleLogout()" class="w-full text-rose-400 hover:text-rose-350 transition flex items-center gap-3 font-semibold bg-rose-500/10 hover:bg-rose-500/20 px-4 py-3 rounded-xl border border-rose-500/10">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-10 space-y-8">
+      
+      <!-- Header -->
+      <header class="flex justify-between items-center border-b border-white/10 pb-6">
+        <div>
+          <h2 class="text-3xl font-extrabold text-white">Company Profile</h2>
+          <p class="text-slate-400">Manage your company details and logo.</p>
+        </div>
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-lg transform hover:-translate-y-0.5" id="editBtn">
+          <i class="fas fa-edit mr-1"></i> Edit Profile
+        </button>
+      </header>
+
+      <!-- Profile View -->
+      <section id="profileView" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl backdrop-blur-sm space-y-6">
+          <h3 class="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+            <i class="fas fa-info-circle text-indigo-400"></i> Basic Information
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-0.5">Company Name</p>
+              <p class="text-white font-medium text-lg" id="compName">Loading...</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-0.5">Industry Type</p>
+              <p class="text-white font-medium text-lg" id="compIndustry">Loading...</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-0.5">Official Email</p>
+              <p class="text-white font-medium text-lg" id="compEmail">Loading...</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-0.5">Company Website</p>
+              <a href="#" id="compWebsite" target="_blank" class="text-indigo-400 hover:text-indigo-300 transition font-medium text-lg underline">Loading...</a>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-0.5">Location</p>
+              <p class="text-white font-medium text-lg" id="compLocation">Loading...</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-0.5">HR Contact Person</p>
+              <p class="text-white font-medium text-lg" id="compHR">Loading...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl backdrop-blur-sm flex flex-col items-center justify-center text-center">
+          <h3 class="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3 w-full justify-center mb-6">
+            <i class="fas fa-image text-indigo-400"></i> Logo & Branding
+          </h3>
+          <div class="relative w-48 h-48 border border-slate-700 bg-slate-900/60 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner mb-4">
+            <img id="compLogo" src="" alt="Company Logo" class="max-w-full max-h-full object-contain p-2" onerror="this.style.display='none'; document.getElementById('logoPlaceholder').classList.remove('hidden')" />
+            <div id="logoPlaceholder" class="hidden text-slate-500 text-4xl">
+              <i class="fas fa-building"></i>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Official brand mark displayed on job listings.</p>
+        </div>
+      </section>
+
+      <!-- Edit Form (hidden by default) -->
+      <section id="profileEdit" class="hidden">
+        <form id="editForm" class="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-xl backdrop-blur-sm space-y-6">
+          <h3 class="text-2xl font-bold text-white border-b border-white/10 pb-3 flex items-center gap-2">
+            <i class="fas fa-user-edit text-indigo-400"></i> Edit Company Profile
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-slate-200 mb-2">Company Name</label>
+              <input type="text" id="name" name="name" required 
+                     class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-200 mb-2">Industry</label>
+              <input type="text" id="industry" name="industry" required 
+                     class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-200 mb-2">Email Address</label>
+              <input type="email" id="email" name="email" required 
+                     class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-200 mb-2">Website URL</label>
+              <input type="url" id="website" name="website" 
+                     class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-200 mb-2">Location</label>
+              <input type="text" id="location" name="location" 
+                     class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-200 mb-2">HR Contact Person</label>
+              <input type="text" id="hrContact" name="hrContact" 
+                     class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold text-slate-200 mb-2">Logo Image URL</label>
+              <input type="url" id="logo" name="logo" placeholder="https://..." 
+                     class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+            </div>
+          </div>
+          <div class="flex justify-end space-x-4 pt-4 border-t border-white/10">
+            <button type="button" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-6 rounded-xl transition" id="cancelEdit">Cancel</button>
+            <button type="submit" id="saveBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-lg transform hover:-translate-y-0.5">Save Changes</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'company-login.html';
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'company-login.html';
+    }
+
+    const compName = document.getElementById('compName');
+    const compIndustry = document.getElementById('compIndustry');
+    const compEmail = document.getElementById('compEmail');
+    const compWebsite = document.getElementById('compWebsite');
+    const compLocation = document.getElementById('compLocation');
+    const compHR = document.getElementById('compHR');
+    const compLogo = document.getElementById('compLogo');
+
+    const profileView = document.getElementById('profileView');
+    const profileEdit = document.getElementById('profileEdit');
+    const editBtn = document.getElementById('editBtn');
+    const cancelEdit = document.getElementById('cancelEdit');
+    const editForm = document.getElementById('editForm');
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('http://localhost:5000/api/company/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Failed to fetch profile');
+        const data = await res.json();
+        const c = data.data;
+
+        // Update Sidebar brand dynamically
+        if (c.name) {
+          document.getElementById('sidebarCompanyName').textContent = c.name;
+          if (c.logo) {
+            document.getElementById('sidebarLogo').innerHTML = `<img src="${c.logo}" class="w-full h-full object-contain p-0.5 rounded-xl" />`;
+          } else {
+            document.getElementById('sidebarLogo').textContent = c.name.charAt(0).toUpperCase();
+          }
+        }
+
+        compName.textContent = c.name || '';
+        compIndustry.textContent = c.industry || '';
+        compEmail.textContent = c.email || '';
+        compWebsite.href = c.website || '#';
+        compWebsite.textContent = c.website || '';
+        compLocation.textContent = c.location || '';
+        compHR.textContent = c.hrContact || '';
+        
+        if (c.logo) {
+          compLogo.src = c.logo;
+          compLogo.style.display = '';
+          document.getElementById('logoPlaceholder').classList.add('hidden');
+        } else {
+          compLogo.style.display = 'none';
+          document.getElementById('logoPlaceholder').classList.remove('hidden');
+        }
+        
+        // Populate edit form fields
+        document.getElementById('name').value = c.name || '';
+        document.getElementById('industry').value = c.industry || '';
+        document.getElementById('email').value = c.email || '';
+        document.getElementById('website').value = c.website || '';
+        document.getElementById('location').value = c.location || '';
+        document.getElementById('hrContact').value = c.hrContact || '';
+        document.getElementById('logo').value = c.logo || '';
+      } catch (e) {
+        console.error(e);
+        alert('Unable to load company profile.');
+      }
+    }
+
+    editBtn.addEventListener('click', () => {
+      profileView.classList.add('hidden');
+      profileEdit.classList.remove('hidden');
+    });
+
+    cancelEdit.addEventListener('click', () => {
+      profileEdit.classList.add('hidden');
+      profileView.classList.remove('hidden');
+    });
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      saveBtn.disabled = true;
+
+      const payload = {
+        name: document.getElementById('name').value,
+        industry: document.getElementById('industry').value,
+        email: document.getElementById('email').value,
+        website: document.getElementById('website').value,
+        location: document.getElementById('location').value,
+        hrContact: document.getElementById('hrContact').value,
+        logo: document.getElementById('logo').value,
+      };
+
+      try {
+        const res = await fetch('http://localhost:5000/api/company/me', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('Update failed');
+        alert('Profile updated successfully');
+        profileEdit.classList.add('hidden');
+        profileView.classList.remove('hidden');
+        await loadProfile();
+      } catch (e) {
+        console.error(e);
+        alert('Error updating profile');
+      } finally {
+        saveBtn.innerHTML = 'Save Changes';
+        saveBtn.disabled = false;
+      }
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>

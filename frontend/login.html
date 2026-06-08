@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SmartJobFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="index.html">SmartJobFinder</a></div>
+        <div class="nav-links">
+            <button class="theme-toggle" id="themeToggleBtn"><i class="fas fa-moon"></i></button>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <div class="glass-panel auth-box">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Log in to your SmartJobFinder account</p>
+
+            <div class="alert alert-danger" id="loginError" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="loginErrorMsg">Invalid credentials</span>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="rememberMe"> Remember me
+                    </label>
+                    <a href="#" style="color: var(--primary);">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary w-full btn-lg" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <div class="form-group">
+                    <p>Don't have an account? <a href="signup.html">Create one free</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.style.display = 'none';
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            btn.disabled = true;
+
+            try {
+                const data = await API.login(email, password);
+                if (data.success) {
+                    // Redirect based on role
+                    const role = data.user.role;
+                    if (role === 'employer') window.location.href = 'dashboard-employer.html';
+                    else if (role === 'admin') window.location.href = 'dashboard-admin.html';
+                    else window.location.href = 'dashboard-seeker.html';
+                } else {
+                    throw new Error(data.error || 'Login failed');
+                }
+            } catch (err) {
+                errorDiv.style.display = 'flex';
+                document.getElementById('loginErrorMsg').textContent = err.message;
+            } finally {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

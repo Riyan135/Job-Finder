@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications - SmartJobFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .application-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+        .application-card:hover {
+            transform: translateY(-2px);
+        }
+        .app-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .app-company-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .app-details h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+        .app-details p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+        .app-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-applied { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .status-review { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .status-interview { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+        .status-selected { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo" style="margin-bottom: 2rem; padding-left: 1rem;">JobFinder</div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard-seeker.html"><i class="fas fa-home"></i> Overview</a></li>
+                <li><a href="job-search.html"><i class="fas fa-search"></i> Find Jobs</a></li>
+                <li><a href="my-applications.html" class="active"><i class="fas fa-briefcase"></i> My Applications</a></li>
+                <li><a href="skill-gap.html"><i class="fas fa-chart-line"></i> Skill Gap Analyzer</a></li>
+                <li><a href="resume-analyzer.html"><i class="fas fa-file-alt"></i> Resume</a></li>
+                <li><a href="chatbot.html"><i class="fas fa-robot"></i> AI Assistant</a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-menu" style="flex: 0;">
+                <li><button class="theme-toggle" id="themeToggleBtn" style="padding-left:1rem;"><i class="fas fa-moon"></i> Theme</button></li>
+                <li><a href="#" onclick="API.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div>
+                    <h2><i class="fas fa-briefcase" style="color: var(--primary); margin-right: 0.5rem;"></i> My Applications</h2>
+                    <p style="opacity: 0.6; margin-top: 0.25rem; font-size: 0.9rem;">Track the status of jobs you've applied for</p>
+                </div>
+            </header>
+
+            <div id="applicationsContainer">
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                    <p style="margin-top: 1rem;">Loading applications...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = checkAuth();
+            if (user && user.role !== 'jobseeker') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const container = document.getElementById('applicationsContainer');
+
+            try {
+                const res = await API.getMyApplications();
+                if (res.success && res.data.length > 0) {
+                    container.innerHTML = '';
+                    res.data.forEach(app => {
+                        const stages = ['Applied', 'Under Review', 'Shortlisted', 'Interview Scheduled', 'Selected'];
+                        const isRejected = app.status === 'Rejected';
+                        let currentStageIndex = stages.indexOf(app.status);
+                        
+                        // Treat 'Shortlisted' or 'Interview Scheduled' logically in the timeline
+                        if (currentStageIndex === -1 && !isRejected) currentStageIndex = 0; // Fallback
+
+                        let timelineHTML = '<div class="tracking-timeline" style="display: flex; justify-content: space-between; position: relative; margin-top: 1.5rem; margin-bottom: 1rem;">';
+                        timelineHTML += '<div style="position: absolute; top: 12px; left: 0; right: 0; height: 3px; background: var(--glass-border); z-index: 1;"></div>';
+                        timelineHTML += `<div style="position: absolute; top: 12px; left: 0; width: ${isRejected ? '100%' : (currentStageIndex / (stages.length - 1)) * 100}%; height: 3px; background: ${isRejected ? '#ef4444' : 'var(--primary-color)'}; z-index: 2; transition: width 0.5s ease;"></div>`;
+
+                        const displayStages = ['Applied', 'Under Review', isRejected ? 'Rejected' : 'Interview', isRejected ? '' : 'Selected'].filter(Boolean);
+                        
+                        displayStages.forEach((stage, idx) => {
+                            let stageStatus = 'pending';
+                            if (isRejected) {
+                                if (stage === 'Rejected') stageStatus = 'rejected';
+                                else stageStatus = 'completed'; // Assuming rejected at the end, or we can just color all red. Actually let's just make the active one red.
+                            } else {
+                                if (idx < currentStageIndex) stageStatus = 'completed';
+                                else if (idx === currentStageIndex) stageStatus = 'active';
+                            }
+                            
+                            let icon = 'fa-circle';
+                            let color = 'var(--text-muted)';
+                            let bgColor = 'var(--input-bg)';
+                            
+                            if (stageStatus === 'completed') { color = 'var(--primary-color)'; icon = 'fa-check-circle'; bgColor = 'var(--bg-color)'; }
+                            if (stageStatus === 'active') { color = 'var(--primary-color)'; icon = 'fa-dot-circle'; bgColor = 'var(--bg-color)'; }
+                            if (stageStatus === 'rejected') { color = '#ef4444'; icon = 'fa-times-circle'; bgColor = 'var(--bg-color)'; }
+
+                            timelineHTML += `
+                                <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; background: ${bgColor}; padding: 0 10px;">
+                                    <i class="fas ${icon}" style="color: ${color}; font-size: 1.5rem; background: ${bgColor}; border-radius: 50%;"></i>
+                                    <span style="font-size: 0.75rem; margin-top: 0.5rem; color: ${color}; font-weight: ${stageStatus !== 'pending' ? '600' : '400'};">${stage}</span>
+                                </div>
+                            `;
+                        });
+                        timelineHTML += '</div>';
+
+                        const html = `
+                            <div class="glass-panel application-card" style="flex-direction: column; align-items: stretch; gap: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                                    <div class="app-info">
+                                        <div class="app-company-logo">${companyInitials}</div>
+                                        <div class="app-details">
+                                            <h4>${app.job?.title || 'Unknown Job'}</h4>
+                                            <p><i class="fas fa-building"></i> ${app.job?.company?.name || app.job?.company || 'Unknown Company'} &nbsp;|&nbsp; <i class="far fa-calendar-alt"></i> Applied: ${date}</p>
+                                        </div>
+                                    </div>
+                                    <div class="app-meta" style="text-align: right;">
+                                        <div class="app-status ${statusClass}">${app.status}</div>
+                                        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                            <span class="skill-tag tag-blue" style="margin:0;"><i class="fas fa-robot"></i> ATS: ${app.atsScore || 0}/100</span>
+                                            <span class="skill-tag tag-green" style="margin:0;"><i class="fas fa-percentage"></i> Match: ${app.skillMatchPercentage}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                ${timelineHTML}
+
+                                ${app.status === 'Interview Scheduled' && app.interviewDate ? `
+                                <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                                    <h4 style="color: #8b5cf6; margin-bottom: 0.5rem;"><i class="fas fa-calendar-check"></i> Interview Scheduled</h4>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                                        <div><strong>Date:</strong> ${new Date(app.interviewDate).toLocaleDateString()} at ${app.interviewTime}</div>
+                                        <div><strong>Mode:</strong> ${app.interviewMode}</div>
+                                        ${app.interviewLink ? `<div style="grid-column: 1 / -1;"><strong>Link:</strong> <a href="${app.interviewLink}" target="_blank" style="color: var(--primary-color);">${app.interviewLink}</a></div>` : ''}
+                                        ${app.interviewLocation ? `<div style="grid-column: 1 / -1;"><strong>Location:</strong> ${app.interviewLocation}</div>` : ''}
+                                        ${app.interviewInstructions ? `<div style="grid-column: 1 / -1;"><strong>Instructions:</strong> ${app.interviewInstructions}</div>` : ''}
+                                    </div>
+                                </div>
+                                ` : ''}
+
+                                <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--glass-border); padding-top: 1rem; margin-top: 0.5rem;">
+                                    <button class="btn-save" onclick="withdrawApplication('${app._id}')" style="color: #ef4444; border-color: #ef4444;"><i class="fas fa-times"></i> Withdraw Application</button>
+                                </div>
+                            </div>
+                        `;
+                        container.innerHTML += html;
+                    });
+                } else {
+                    container.innerHTML = `
+                        <div class="glass-panel empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>No applications yet!</h3>
+                            <p>You haven't applied to any jobs yet. Head over to the <a href="job-search.html" style="color: var(--primary);">Job Search</a> page to find your dream job.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="alert alert-danger">Failed to load applications: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

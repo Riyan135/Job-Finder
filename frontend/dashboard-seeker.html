@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seeker Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo" style="margin-bottom: 2rem; padding-left: 1rem;">JobFinder</div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard-seeker.html" class="active"><i class="fas fa-home"></i> Overview</a></li>
+                <li><a href="job-search.html"><i class="fas fa-search"></i> Find Jobs</a></li>
+                <li><a href="my-applications.html"><i class="fas fa-briefcase"></i> My Applications</a></li>
+                <li><a href="skill-gap.html"><i class="fas fa-chart-line"></i> Skill Gap Analyzer</a></li>
+                <li><a href="resume-analyzer.html"><i class="fas fa-file-alt"></i> Resume</a></li>
+                <li><a href="chatbot.html"><i class="fas fa-robot"></i> AI Assistant</a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-menu" style="flex: 0;">
+                <li><button class="theme-toggle" id="themeToggleBtn" style="padding-left:1rem;"><i class="fas fa-moon"></i> Theme</button></li>
+                <li><a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <h2 id="welcomeText">Welcome Back, Job Seeker!</h2>
+                <div class="profile-avatar">
+                    <!-- Placeholder for user avatar -->
+                    <i class="fas fa-user-circle fa-2x"></i>
+                </div>
+            </header>
+
+            <div class="stat-grid">
+                <div class="glass-panel stat-card">
+                    <h3 id="jobsAppliedStat"><i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i></h3>
+                    <p>Jobs Applied</p>
+                </div>
+                <div class="glass-panel stat-card">
+                    <h3 id="interviewsStat"><i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i></h3>
+                    <p>Interviews Scheduled</p>
+                </div>
+                <div class="glass-panel stat-card">
+                    <h3 id="resumeScoreStat">--%</h3>
+                    <p>Resume Score</p>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <h3>Recommended Jobs based on your skills</h3>
+                <p style="margin-top: 1rem; color: #888;">Complete your profile to see AI-powered recommendations.</p>
+            </div>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = checkAuth();
+            if (user) {
+                document.getElementById('welcomeText').textContent = `Welcome Back, ${user.name.split(' ')[0]}!`;
+                
+                try {
+                    // Fetch real applications
+                    const res = await API.getMyApplications();
+                    if (res.success && res.data) {
+                        const apps = res.data;
+                        document.getElementById('jobsAppliedStat').textContent = apps.length;
+                        const interviews = apps.filter(a => a.status === 'Interview Scheduled').length;
+                        document.getElementById('interviewsStat').textContent = interviews;
+                    } else {
+                        document.getElementById('jobsAppliedStat').textContent = '0';
+                        document.getElementById('interviewsStat').textContent = '0';
+                    }
+                } catch (err) {
+                    console.error('Failed to load stats', err);
+                    document.getElementById('jobsAppliedStat').textContent = '0';
+                    document.getElementById('interviewsStat').textContent = '0';
+                }
+
+                // Simulate fetching AI resume score
+                setTimeout(() => {
+                    document.getElementById('resumeScoreStat').textContent = '78%';
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

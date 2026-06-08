@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - SmartJobFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ChatGPT-style specific overrides */
+        body {
+            background-color: #343541; /* ChatGPT dark mode background */
+            color: #ececf1;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        /* Overriding dashboard container for full-height chat */
+        .dashboard-container {
+            height: 100vh;
+        }
+        
+        .sidebar {
+            background-color: #202123;
+            border-right: 1px solid #4d4d4f;
+        }
+
+        .dashboard-main {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #343541;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .message-row {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .message-row.bot {
+            background-color: #444654;
+        }
+
+        .message-row.user {
+            background-color: #343541;
+        }
+
+        .message-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1.5rem;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .avatar.bot { background-color: #10a37f; }
+        .avatar.user { background-color: #5436da; }
+
+        .message-text {
+            flex: 1;
+            white-space: pre-wrap;
+        }
+
+        .input-container {
+            background-image: linear-gradient(180deg, rgba(53,55,64,0), #353740 58.85%);
+            padding: 2rem;
+            padding-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .input-box {
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            background: #40414f;
+            border: 1px solid rgba(32,33,35,.5);
+            border-radius: 0.75rem;
+            box-shadow: 0 0 15px rgba(0,0,0,.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 1rem 3rem 1rem 1rem;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+            max-height: 200px;
+            height: 56px;
+            overflow-y: hidden;
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            background: transparent;
+            color: #ececf1;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+        
+        .send-btn:hover { background: #10a37f; }
+        .send-btn:disabled { color: #8e8ea0; background: transparent; cursor: not-allowed; }
+
+        /* Hide the main header for full immersive chat */
+        .dashboard-header { display: none; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo" style="margin-bottom: 2rem; padding-left: 1rem; color: white;">JobFinder</div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard-seeker.html"><i class="fas fa-home"></i> Overview</a></li>
+                <li><a href="job-search.html"><i class="fas fa-search"></i> Find Jobs</a></li>
+                <li><a href="my-applications.html"><i class="fas fa-briefcase"></i> My Applications</a></li>
+                <li><a href="skill-gap.html"><i class="fas fa-chart-line"></i> Skill Gap Analyzer</a></li>
+                <li><a href="resume-analyzer.html"><i class="fas fa-file-alt"></i> Resume</a></li>
+                <li><a href="chatbot.html" class="active" style="background: rgba(255,255,255,0.1);"><i class="fas fa-robot"></i> AI Assistant</a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Chat Area -->
+            <div class="chat-area" id="chatArea">
+                <!-- Welcome Message -->
+                <div class="message-row bot">
+                    <div class="message-content">
+                        <div class="avatar bot"><i class="fas fa-bolt"></i></div>
+                        <div class="message-text">Hello! I am your AI Career Assistant. I'm equipped to help you write better resumes, prepare for tricky interview questions, suggest learning paths, or guide you in salary negotiations. 
+
+How can I assist you with your career today?</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <form class="input-box" id="chatForm">
+                    <textarea id="chatInput" placeholder="Send a message..." rows="1"></textarea>
+                    <button type="submit" class="send-btn" id="sendBtn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+            <div style="text-align: center; font-size: 0.75rem; color: #8e8ea0; padding-bottom: 1rem; background: #353740;">
+                AI Assistant can make mistakes. Consider verifying important information.
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = checkAuth();
+            if (user && user.name) {
+                // We could set the user's initial dynamically
+                window.userInitial = user.name.charAt(0).toUpperCase();
+            } else {
+                window.userInitial = 'U';
+            }
+        });
+
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const chatArea = document.getElementById('chatArea');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Auto resize textarea and enable/disable button
+        chatInput.addEventListener('input', function() {
+            this.style.height = '56px'; // reset
+            this.style.height = (this.scrollHeight) + 'px';
+            sendBtn.disabled = this.value.trim().length === 0;
+        });
+
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!sendBtn.disabled) chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Reset input
+            chatInput.value = '';
+            chatInput.style.height = '56px';
+            sendBtn.disabled = true;
+
+            // Add user message
+            addMessageRow(message, 'user');
+
+            // Add typing placeholder
+            const typingId = 'typing-' + Date.now();
+            addTypingRow(typingId);
+
+            try {
+                // Call API
+                const response = await API.request('/ai/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ message })
+                });
+
+                document.getElementById(typingId).remove();
+
+                if (response.success && response.data) {
+                    streamMessage(response.data.botReply);
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                document.getElementById(typingId).remove();
+                addMessageRow('I experienced an error connecting to my servers. Please try again later.', 'bot');
+            }
+        });
+
+        function addMessageRow(text, type) {
+            const row = document.createElement('div');
+            row.className = `message-row ${type}`;
+            const avatarHtml = type === 'bot' 
+                ? `<div class="avatar bot"><i class="fas fa-bolt"></i></div>`
+                : `<div class="avatar user">${window.userInitial || 'U'}</div>`;
+
+            row.innerHTML = `
+                <div class="message-content">
+                    ${avatarHtml}
+                    <div class="message-text">${escapeHTML(text)}</div>
+                </div>
+            `;
+            chatArea.appendChild(row);
+            scrollToBottom();
+            return row.querySelector('.message-text');
+        }
+
+        function addTypingRow(id) {
+            const row = document.createElement('div');
+            row.className = `message-row bot`;
+            row.id = id;
+            row.innerHTML = `
+                <div class="message-content">
+                    <div class="avatar bot"><i class="fas fa-bolt"></i></div>
+                    <div class="message-text"><i class="fas fa-circle-notch fa-spin"></i> Thinking...</div>
+                </div>
+            `;
+            chatArea.appendChild(row);
+            scrollToBottom();
+        }
+
+        // Simulate ChatGPT streaming effect
+        async function streamMessage(fullText) {
+            const textElement = addMessageRow('', 'bot');
+            
+            // Break text into words or chars for streaming
+            const words = fullText.split(' ');
+            for (let i = 0; i < words.length; i++) {
+                textElement.innerHTML += (i === 0 ? '' : ' ') + escapeHTML(words[i]);
+                scrollToBottom();
+                await new Promise(r => setTimeout(r, Math.random() * 50 + 20)); // stream delay
+            }
+        }
+
+        function scrollToBottom() {
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>

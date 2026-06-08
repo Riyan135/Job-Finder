@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Registration • SmartJobFinder</title>
+  <link rel="icon" href="img/favicon.png">
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-tr from-indigo-950 via-slate-900 to-indigo-900 text-slate-100 font-inter px-4 py-8">
+
+  <div class="w-full max-w-2xl bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold tracking-tight text-white mb-2">Register Your Company</h1>
+      <p class="text-slate-300">Join SmartJobFinder to discover top talents and post vacancies.</p>
+    </div>
+
+    <!-- Error/Success Alerts -->
+    <div id="alertMessage" class="hidden mb-6 p-4 rounded-lg flex items-center gap-3"></div>
+
+    <form id="registerForm" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Company Name</label>
+          <input type="text" name="name" required placeholder="Google Inc." 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Industry Type</label>
+          <input type="text" name="industry" required placeholder="Technology, Finance, etc." 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Company Email</label>
+          <input type="email" name="email" required placeholder="hr@company.com" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Website URL</label>
+          <input type="url" name="website" required placeholder="https://company.com" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Company Location</label>
+          <input type="text" name="location" required placeholder="New York, NY" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">HR Contact Person</label>
+          <input type="text" name="hrContact" required placeholder="John Doe" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Password</label>
+          <input type="password" name="password" required placeholder="••••••••" minlength="6"
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Confirm Password</label>
+          <input type="password" name="confirmPassword" required placeholder="••••••••" minlength="6"
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
+          Register &amp; Send OTP
+        </button>
+      </div>
+    </form>
+
+    <div id="otpSection" class="mt-8 hidden p-6 border border-indigo-500/30 rounded-xl bg-indigo-950/40">
+      <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+        <i class="fas fa-key text-indigo-400"></i> Verify Email OTP
+      </h2>
+      <p class="text-sm text-slate-300 mb-4">Please enter the 6-digit OTP code sent to your company email address.</p>
+      <form id="verifyForm" class="flex gap-4">
+        <input type="text" name="otp" required placeholder="Enter OTP" maxlength="6"
+               class="flex-1 rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white text-center font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        <button type="submit" id="verifyBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:-translate-y-0.5">
+          Verify OTP
+        </button>
+      </form>
+    </div>
+
+    <p class="mt-6 text-center text-sm text-slate-400">
+      Already have a company account?
+      <a href="company-login.html" class="text-indigo-400 hover:text-indigo-300 font-semibold transition hover:underline">Login here</a>
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const otpSection = document.getElementById('otpSection');
+    const alertMessage = document.getElementById('alertMessage');
+    const submitBtn = document.getElementById('submitBtn');
+    const verifyBtn = document.getElementById('verifyBtn');
+
+    function showAlert(msg, isSuccess = false) {
+      alertMessage.classList.remove('hidden', 'bg-red-500/20', 'border-red-500/40', 'text-red-300', 'bg-emerald-500/20', 'border-emerald-500/40', 'text-emerald-300');
+      if (isSuccess) {
+        alertMessage.classList.add('bg-emerald-500/20', 'border', 'border-emerald-500/40', 'text-emerald-300');
+        alertMessage.innerHTML = `<i class="fas fa-check-circle"></i> <span>${msg}</span>`;
+      } else {
+        alertMessage.classList.add('bg-red-500/20', 'border', 'border-red-500/40', 'text-red-300');
+        alertMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> <span>${msg}</span>`;
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const password = form.password.value;
+      const confirmPassword = form.confirmPassword.value;
+
+      if (password !== confirmPassword) {
+        showAlert('Passwords do not match.');
+        return;
+      }
+
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+      submitBtn.disabled = true;
+
+      const data = new FormData(form);
+      const payload = Object.fromEntries(data.entries());
+      delete payload.confirmPassword;
+
+      try {
+        const res = await fetch('http://localhost:5000/api/company/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+        if (res.ok || result.success) {
+          showAlert(`OTP has been sent to your email. (For testing, use code: ${result.data.otp})`, true);
+          otpSection.classList.remove('hidden');
+          otpSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          showAlert(result.error || 'Registration failed');
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert('An error occurred. Please try again.');
+      } finally {
+        submitBtn.innerHTML = 'Register & Send OTP';
+        submitBtn.disabled = false;
+      }
+    });
+
+    const verifyForm = document.getElementById('verifyForm');
+    verifyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+      verifyBtn.disabled = true;
+
+      const otp = verifyForm.otp.value.trim();
+      const email = form.email.value.trim();
+
+      try {
+        const res = await fetch('http://localhost:5000/api/company/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp }),
+        });
+        const result = await res.json();
+        if (res.ok || result.success) {
+          localStorage.setItem('token', result.token);
+          localStorage.setItem('user', JSON.stringify(result.user));
+          showAlert('Verification successful! Redirecting to dashboard...', true);
+          setTimeout(() => {
+            window.location.href = 'company-dashboard.html';
+          }, 1500);
+        } else {
+          showAlert(result.error || 'OTP verification failed.');
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert('An error occurred during verification.');
+      } finally {
+        verifyBtn.innerHTML = 'Verify OTP';
+        verifyBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - SmartJobFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="index.html">SmartJobFinder</a></div>
+        <div class="nav-links">
+            <button class="theme-toggle" id="themeToggleBtn"><i class="fas fa-moon"></i></button>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <div class="glass-panel auth-box">
+            <h2>Create Your Account</h2>
+            <p class="subtitle">Start your journey to finding the perfect job</p>
+
+            <div class="alert alert-danger" id="signupError" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="signupErrorMsg"></span>
+            </div>
+            <div class="alert alert-success" id="signupSuccess" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span>Account created! Redirecting...</span>
+            </div>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="name"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name" minlength="2">
+                </div>
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group" style="position: relative;">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Create a strong password" minlength="6" style="padding-right: 2.5rem;">
+                    <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 1rem; top: 2.7rem; cursor: pointer; color: var(--text-muted);"></i>
+                    <small class="text-muted" style="margin-top: 0.3rem; display: block;">Minimum 6 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                    <input type="password" id="confirmPassword" required placeholder="Confirm your password">
+                </div>
+                <div class="form-group">
+                    <label for="role"><i class="fas fa-user-tag"></i> I am a...</label>
+                    <select id="role" name="role" required>
+                        <option value="jobseeker">Job Seeker</option>
+                        <option value="employer">Employer</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-full btn-lg" id="signupBtn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <div class="form-group">
+                    <p>Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('signupError');
+            const successDiv = document.getElementById('signupSuccess');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('role').value;
+
+            if (password !== confirmPassword) {
+                errorDiv.style.display = 'flex';
+                document.getElementById('signupErrorMsg').textContent = 'Passwords do not match';
+                return;
+            }
+
+            const btn = document.getElementById('signupBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+            btn.disabled = true;
+
+            try {
+                const data = await API.register(name, email, password, role);
+                if (data.success) {
+                    successDiv.style.display = 'flex';
+                    setTimeout(() => {
+                        if (role === 'employer') window.location.href = 'dashboard-employer.html';
+                        else window.location.href = 'dashboard-seeker.html';
+                    }, 1500);
+                } else {
+                    throw new Error(data.error || 'Signup failed');
+                }
+            } catch (err) {
+                errorDiv.style.display = 'flex';
+                document.getElementById('signupErrorMsg').textContent = err.message;
+            } finally {
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+                btn.disabled = false;
+            }
+        });
+
+        // Toggle Password Visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const pwdInput = document.getElementById('password');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+    </script>
+</body>
+</html>

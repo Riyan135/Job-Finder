@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Smart Local Job Finder - AI-powered job search, skill gap analysis, and career guidance platform.">
+<meta http-equiv="Content-Security-Policy" content="default-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; font-src *;">
+    <title>Smart Local Job Finder & Skill Gap Analyzer</title>
+    <link rel="icon" href="file:///C:/Users/riyan/.gemini/antigravity/brain/8dd29a40-ad44-430a-ac3f-754b8c0d38bd/favicon_1780671628179.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="css/tailwind.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">SmartJobFinder</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="job-search.html">Jobs</a>
+            <a href="employer-portal.html" class="btn btn-primary glass-btn btn-sm">🏢 For Employers</a>
+            <button class="theme-toggle" id="themeToggleBtn" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+            <a href="login.html" class="btn btn-secondary btn-sm">Login</a>
+            <a href="signup.html" class="btn btn-primary btn-sm">Sign Up Free</a>
+        </div>
+        <button class="mobile-menu-toggle" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Find Your Dream Job &<br><span class="gradient-text">Bridge Your Skill Gap</span></h1>
+        <p>AI-powered local job recommendations, smart resume analysis, and personalized learning roadmaps — everything you need to land your perfect role.</p>
+        
+        <div class="search-bar glass-panel">
+            <input type="text" placeholder="Job title, keywords, or company" id="heroSearchKeyword">
+            <input type="text" placeholder="City or location" id="heroSearchLocation">
+            <button class="btn btn-primary btn-lg" onclick="handleHeroSearch()">
+                <i class="fas fa-search"></i> Search Jobs
+            </button>
+        </div>
+
+        <div style="display: flex; gap: 2rem; margin-top: 3rem; flex-wrap: wrap; justify-content: center;" class="animate-fadeInUp stagger-4">
+            <div style="text-align: center;">
+                <h3 style="font-size: 1.8rem;" class="text-primary">10,000+</h3>
+                <p class="text-muted">Active Jobs</p>
+            </div>
+            <div style="text-align: center;">
+                <h3 style="font-size: 1.8rem;" class="text-primary">5,000+</h3>
+                <p class="text-muted">Companies</p>
+            </div>
+            <div style="text-align: center;">
+                <h3 style="font-size: 1.8rem;" class="text-primary">95%</h3>
+                <p class="text-muted">Success Rate</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <h2>Why Choose SmartJobFinder?</h2>
+        <div class="features-grid">
+            <div class="glass-panel feature-card animate-fadeInUp stagger-1">
+                <div class="icon purple"><i class="fas fa-brain"></i></div>
+                <h3>AI Skill Gap Analyzer</h3>
+                <p>Compare your skills with any job requirements and get a detailed skill gap report with visual charts and match percentage.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-2">
+                <div class="icon green"><i class="fas fa-file-alt"></i></div>
+                <h3>Smart Resume Analyzer</h3>
+                <p>Get your resume scored out of 100, check ATS compatibility, and receive actionable suggestions to improve your resume.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-3">
+                <div class="icon amber"><i class="fas fa-map-marker-alt"></i></div>
+                <h3>Location-Based Jobs</h3>
+                <p>Find jobs near you with intelligent location-based filtering. See nearby opportunities ranked by relevance and distance.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-1">
+                <div class="icon blue"><i class="fas fa-graduation-cap"></i></div>
+                <h3>Learning Roadmap</h3>
+                <p>Get personalized course recommendations, YouTube tutorials, and certifications for your missing skills with estimated completion times.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-2">
+                <div class="icon pink"><i class="fas fa-robot"></i></div>
+                <h3>AI Career Chatbot</h3>
+                <p>Get instant career guidance, interview tips, and resume advice from our AI-powered career coach available 24/7.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-3">
+                <div class="icon teal"><i class="fas fa-chart-line"></i></div>
+                <h3>Analytics Dashboard</h3>
+                <p>Track your application progress, skill improvement trends, and resume score history with beautiful visual analytics.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="features-section" id="how-it-works">
+        <h2>How It Works</h2>
+        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <div class="glass-panel feature-card animate-fadeInUp stagger-1">
+                <div class="icon blue"><i class="fas fa-user-plus"></i></div>
+                <h3>1. Create Profile</h3>
+                <p>Sign up, upload your resume, and add your skills, education, and experience to build your professional profile.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-2">
+                <div class="icon purple"><i class="fas fa-search"></i></div>
+                <h3>2. Search & Match</h3>
+                <p>Browse jobs or let our AI recommend the best matches based on your skills, location, and career goals.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-3">
+                <div class="icon green"><i class="fas fa-chart-bar"></i></div>
+                <h3>3. Analyze & Improve</h3>
+                <p>Run skill gap analysis, improve your resume with AI suggestions, and follow personalized learning paths.</p>
+            </div>
+            <div class="glass-panel feature-card animate-fadeInUp stagger-4">
+                <div class="icon amber"><i class="fas fa-trophy"></i></div>
+                <h3>4. Get Hired!</h3>
+                <p>Apply with confidence, track your applications, and prepare for interviews with our career tools.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="padding: 6rem 5%; text-align: center;">
+        <div class="glass-panel" style="max-width: 800px; margin: 0 auto; padding: 4rem;">
+            <h2 style="margin-bottom: 1rem;">Ready to Land Your Dream Job?</h2>
+            <p class="text-muted" style="margin-bottom: 2rem; font-size: 1.1rem;">Join thousands of job seekers who have already improved their skills and found great opportunities.</p>
+            <a href="signup.html" class="btn btn-primary btn-lg"><i class="fas fa-rocket"></i> Get Started Free</a>
+        </div>
+    </section>
+
+    <!-- Looking to Hire Section -->
+    <section class="bg-gray-100 dark:bg-gray-800 py-12">
+      <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-200">Looking to Hire?</h2>
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">Join 5,000+ companies hiring through SmartJobFinder.</p>
+        <a href="employer-portal.html" class="btn btn-primary glass-btn btn-lg">Register as Employer</a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 SmartJobFinder | Built for MCA Final Year Project</p>
+        <p style="margin-top: 0.5rem;">Made with <i class="fas fa-heart" style="color: var(--danger);"></i> using Node.js, Express, MongoDB & Vanilla JS</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        function handleHeroSearch() {
+            const keyword = document.getElementById('heroSearchKeyword').value;
+            const location = document.getElementById('heroSearchLocation').value;
+            window.location.href = `job-search.html?keyword=${encodeURIComponent(keyword)}&location=${encodeURIComponent(location)}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Gap Analyzer - JobFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .skill-gap-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-title i {
+            color: var(--primary-color);
+        }
+        /* User Skills */
+        .user-skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+        .user-skill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(124, 58, 237, 0.1));
+            color: var(--primary-color);
+            border: 1px solid rgba(79, 70, 229, 0.25);
+            transition: all 0.2s;
+        }
+        .user-skill-tag:hover {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(124, 58, 237, 0.2));
+        }
+        .user-skill-tag .remove-btn {
+            cursor: pointer;
+            opacity: 0.5;
+            font-size: 0.75rem;
+            transition: opacity 0.2s;
+        }
+        .user-skill-tag .remove-btn:hover { opacity: 1; }
+        .add-skill-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .add-skill-input input {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .add-skill-input input:focus {
+            border-color: var(--primary-color);
+        }
+        .add-skill-btn {
+            padding: 0.6rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        /* Compare Section */
+        .compare-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            margin-bottom: 1rem;
+        }
+        .compare-select:focus {
+            border-color: var(--primary-color);
+        }
+        .compare-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .compare-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+        .job-preview-mini {
+            background: rgba(79, 70, 229, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px dashed var(--glass-border);
+        }
+        .job-preview-mini h5 {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        .job-preview-mini .company {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-bottom: 0.5rem;
+        }
+        .job-preview-mini .required-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .job-preview-mini .req-skill {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+        /* Circular Progress */
+        .report-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .circular-progress {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            flex-shrink: 0;
+        }
+        .circular-progress svg {
+            transform: rotate(-90deg);
+            width: 160px;
+            height: 160px;
+        }
+        .circular-progress .bg-circle {
+            fill: none;
+            stroke: rgba(79, 70, 229, 0.1);
+            stroke-width: 10;
+        }
+        .circular-progress .progress-circle {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 408;
+            stroke-dashoffset: 122; /* 408 - (408 * 0.70) = ~122 for 70% */
+            transition: stroke-dashoffset 1s ease;
+        }
+        .circular-progress .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .circular-progress .percentage .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .circular-progress .percentage .label {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            font-weight: 500;
+        }
+        .report-summary {
+            flex: 1;
+        }
+        .report-summary h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+        }
+        .report-summary p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+        .summary-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .summary-stat {
+            text-align: center;
+        }
+        .summary-stat .count {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .summary-stat .count.green { color: #10b981; }
+        .summary-stat .count.yellow { color: #f59e0b; }
+        .summary-stat .count.red { color: #ef4444; }
+        .summary-stat .stat-label {
+            font-size: 0.78rem;
+            opacity: 0.6;
+        }
+        /* Skill Categories */
+        .skill-categories {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .skill-category {
+            padding: 1.5rem;
+        }
+        .skill-category h4 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .skill-item {
+            margin-bottom: 1rem;
+        }
+        .skill-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+        .skill-item-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .skill-item-level {
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .skill-bar {
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(128, 128, 128, 0.15);
+            overflow: hidden;
+        }
+        .skill-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        .skill-bar-fill.green { background: linear-gradient(90deg, #10b981, #059669); }
+        .skill-bar-fill.yellow { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .skill-bar-fill.red { background: linear-gradient(90deg, #ef4444, #dc2626); }
+        /* Learning Recommendations */
+        .learning-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .learning-card {
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+        .learning-card:hover {
+            transform: translateY(-3px);
+        }
+        .learning-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .platform-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .platform-icon.youtube { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .platform-icon.udemy { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .platform-icon.coursera { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .platform-icon.freecodecamp { background: linear-gradient(135deg, #059669, #047857); }
+        .learning-info h5 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        .learning-info .platform-name {
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+        .learning-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.82rem;
+            opacity: 0.6;
+        }
+        .learning-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .missing-skill-label {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            margin-bottom: 0.75rem;
+        }
+        .start-btn {
+            width: 100%;
+            padding: 0.6rem;
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: transform 0.2s;
+        }
+        .start-btn:hover {
+            transform: translateY(-1px);
+        }
+        @media (max-width: 900px) {
+            .skill-gap-grid { grid-template-columns: 1fr; }
+            .skill-categories { grid-template-columns: 1fr; }
+            .report-header { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo" style="margin-bottom: 2rem; padding-left: 1rem;">JobFinder</div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard-seeker.html"><i class="fas fa-home"></i> Overview</a></li>
+                <li><a href="job-search.html"><i class="fas fa-search"></i> Find Jobs</a></li>
+                <li><a href="my-applications.html"><i class="fas fa-briefcase"></i> My Applications</a></li>
+                <li><a href="skill-gap.html" class="active"><i class="fas fa-chart-line"></i> Skill Gap Analyzer</a></li>
+                <li><a href="resume-analyzer.html"><i class="fas fa-file-alt"></i> Resume</a></li>
+                <li><a href="chatbot.html"><i class="fas fa-robot"></i> AI Assistant</a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-menu" style="flex: 0;">
+                <li><button class="theme-toggle" id="themeToggleBtn" style="padding-left:1rem;"><i class="fas fa-moon"></i> Theme</button></li>
+                <li><a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div>
+                    <h2><i class="fas fa-chart-line" style="color: var(--primary-color); margin-right: 0.5rem;"></i>Skill Gap Analyzer</h2>
+                    <p style="opacity: 0.6; margin-top: 0.25rem; font-size: 0.9rem;">Compare your skills against job requirements and get learning recommendations</p>
+                </div>
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle fa-2x"></i>
+                </div>
+            </header>
+
+            <!-- Section 1 & 2: Your Skills + Compare -->
+            <div class="skill-gap-grid">
+                <!-- Your Skills -->
+                <section class="glass-panel">
+                    <div class="section-title"><i class="fas fa-star"></i> Your Skills</div>
+                    <div class="user-skills-list" id="userSkills">
+                        <span class="user-skill-tag"><i class="fas fa-code"></i> JavaScript <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span></span>
+                        <span class="user-skill-tag"><i class="fas fa-code"></i> Python <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span></span>
+                        <span class="user-skill-tag"><i class="fas fa-code"></i> HTML <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span></span>
+                        <span class="user-skill-tag"><i class="fas fa-code"></i> CSS <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span></span>
+                        <span class="user-skill-tag"><i class="fas fa-code"></i> React <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span></span>
+                        <span class="user-skill-tag"><i class="fas fa-code"></i> Git <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span></span>
+                        <span class="user-skill-tag"><i class="fas fa-code"></i> SQL <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span></span>
+                    </div>
+                    <div class="add-skill-input">
+                        <input type="text" placeholder="Add a new skill..." id="newSkillInput">
+                        <button class="add-skill-btn" onclick="addSkill()"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                </section>
+
+                <!-- Compare with Job -->
+                <section class="glass-panel">
+                    <div class="section-title"><i class="fas fa-crosshairs"></i> Compare with Job</div>
+                    <select class="compare-select" id="jobSelect">
+                        <option value="" disabled>Select a job to compare...</option>
+                        <option value="1" selected>Frontend Developer (React) - Razorpay</option>
+                        <option value="2">Software Developer - TCS</option>
+                        <option value="3">Data Analyst - Infosys</option>
+                        <option value="4">Full Stack Engineer - Wipro</option>
+                        <option value="5">ML Engineering Intern - Zomato</option>
+                        <option value="6">DevOps Engineer - Flipkart</option>
+                    </select>
+                    <button class="compare-btn"><i class="fas fa-balance-scale"></i> Analyze Skill Gap</button>
+
+                    <div class="job-preview-mini">
+                        <h5>Frontend Developer (React)</h5>
+                        <div class="company">Razorpay • Bangalore • ₹14-22 LPA</div>
+                        <div class="required-skills">
+                            <span class="req-skill">React</span>
+                            <span class="req-skill">TypeScript</span>
+                            <span class="req-skill">Redux</span>
+                            <span class="req-skill">JavaScript</span>
+                            <span class="req-skill">CSS/SASS</span>
+                            <span class="req-skill">Jest</span>
+                            <span class="req-skill">Webpack</span>
+                            <span class="req-skill">Git</span>
+                            <span class="req-skill">REST APIs</span>
+                            <span class="req-skill">Figma</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Section 3: Skill Gap Report -->
+            <section class="glass-panel" style="margin-bottom: 1.5rem;">
+                <div class="section-title"><i class="fas fa-clipboard-check"></i> Skill Gap Report</div>
+
+                <div class="report-header">
+                    <div class="circular-progress">
+                        <svg viewBox="0 0 140 140">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#4f46e5" />
+                                    <stop offset="100%" style="stop-color:#7c3aed" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="bg-circle" cx="70" cy="70" r="65" />
+                            <circle class="progress-circle" cx="70" cy="70" r="65" />
+                        </svg>
+                        <div class="percentage">
+                            <div class="number">70%</div>
+                            <div class="label">Match</div>
+                        </div>
+                    </div>
+                    <div class="report-summary">
+                        <h3>Good Match! Keep Improving 💪</h3>
+                        <p>You match 7 out of 10 skills required for <strong>Frontend Developer (React)</strong> at <strong>Razorpay</strong>. Focus on learning TypeScript, Redux, and Jest to become an ideal candidate.</p>
+                        <div class="summary-stats">
+                            <div class="summary-stat">
+                                <div class="count green">4</div>
+                                <div class="stat-label">Strong</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="count yellow">3</div>
+                                <div class="stat-label">Moderate</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="count red">3</div>
+                                <div class="stat-label">Missing</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skill Categories -->
+            <div class="skill-categories">
+                <!-- Strong Skills -->
+                <div class="glass-panel skill-category">
+                    <h4><span style="color: #10b981;">✅</span> Strong Skills</h4>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">JavaScript</span>
+                            <span class="skill-item-level" style="color: #10b981;">90%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill green" style="width: 90%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">React</span>
+                            <span class="skill-item-level" style="color: #10b981;">85%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill green" style="width: 85%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">CSS/SASS</span>
+                            <span class="skill-item-level" style="color: #10b981;">80%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill green" style="width: 80%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">Git</span>
+                            <span class="skill-item-level" style="color: #10b981;">88%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill green" style="width: 88%;"></div></div>
+                    </div>
+                </div>
+
+                <!-- Moderate Skills -->
+                <div class="glass-panel skill-category">
+                    <h4><span style="color: #f59e0b;">⚠️</span> Moderate Skills</h4>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">REST APIs</span>
+                            <span class="skill-item-level" style="color: #f59e0b;">55%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill yellow" style="width: 55%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">Webpack</span>
+                            <span class="skill-item-level" style="color: #f59e0b;">40%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill yellow" style="width: 40%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">Figma</span>
+                            <span class="skill-item-level" style="color: #f59e0b;">45%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill yellow" style="width: 45%;"></div></div>
+                    </div>
+                </div>
+
+                <!-- Missing Skills -->
+                <div class="glass-panel skill-category">
+                    <h4><span style="color: #ef4444;">❌</span> Missing Skills</h4>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">TypeScript</span>
+                            <span class="skill-item-level" style="color: #ef4444;">10%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill red" style="width: 10%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">Redux</span>
+                            <span class="skill-item-level" style="color: #ef4444;">15%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill red" style="width: 15%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-item-header">
+                            <span class="skill-item-name">Jest</span>
+                            <span class="skill-item-level" style="color: #ef4444;">5%</span>
+                        </div>
+                        <div class="skill-bar"><div class="skill-bar-fill red" style="width: 5%;"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Learning Recommendations -->
+            <section>
+                <div class="section-title" style="font-size: 1.2rem; margin-bottom: 1.5rem;">
+                    <i class="fas fa-graduation-cap" style="color: var(--primary-color);"></i> Learning Recommendations
+                </div>
+                <div class="learning-grid">
+
+                    <!-- TypeScript Course -->
+                    <div class="glass-panel learning-card">
+                        <div class="learning-card-header">
+                            <div class="platform-icon udemy"><i class="fas fa-play"></i></div>
+                            <div class="learning-info">
+                                <h5>Understanding TypeScript - 2026 Edition</h5>
+                                <span class="platform-name">Udemy • Maximilian Schwarzmüller</span>
+                            </div>
+                        </div>
+                        <span class="missing-skill-label"><i class="fas fa-exclamation-circle"></i> Missing: TypeScript</span>
+                        <div class="learning-meta">
+                            <span><i class="fas fa-clock"></i> 15 hours</span>
+                            <span><i class="fas fa-star" style="color: #f59e0b;"></i> 4.8/5</span>
+                            <span><i class="fas fa-users"></i> 185K students</span>
+                        </div>
+                        <button class="start-btn"><i class="fas fa-external-link-alt"></i> Start Learning</button>
+                    </div>
+
+                    <!-- Redux Course -->
+                    <div class="glass-panel learning-card">
+                        <div class="learning-card-header">
+                            <div class="platform-icon youtube"><i class="fab fa-youtube"></i></div>
+                            <div class="learning-info">
+                                <h5>Redux Toolkit Tutorial - Full Course</h5>
+                                <span class="platform-name">YouTube • Dave Gray</span>
+                            </div>
+                        </div>
+                        <span class="missing-skill-label"><i class="fas fa-exclamation-circle"></i> Missing: Redux</span>
+                        <div class="learning-meta">
+                            <span><i class="fas fa-clock"></i> 8 hours</span>
+                            <span><i class="fas fa-star" style="color: #f59e0b;"></i> 4.9/5</span>
+                            <span><i class="fas fa-eye"></i> 520K views</span>
+                        </div>
+                        <button class="start-btn"><i class="fas fa-external-link-alt"></i> Start Learning</button>
+                    </div>
+
+                    <!-- Jest Course -->
+                    <div class="glass-panel learning-card">
+                        <div class="learning-card-header">
+                            <div class="platform-icon coursera"><i class="fas fa-graduation-cap"></i></div>
+                            <div class="learning-info">
+                                <h5>Testing React with Jest & RTL</h5>
+                                <span class="platform-name">Coursera • Bonnie Schulkin</span>
+                            </div>
+                        </div>
+                        <span class="missing-skill-label"><i class="fas fa-exclamation-circle"></i> Missing: Jest</span>
+                        <div class="learning-meta">
+                            <span><i class="fas fa-clock"></i> 12 hours</span>
+                            <span><i class="fas fa-star" style="color: #f59e0b;"></i> 4.7/5</span>
+                            <span><i class="fas fa-certificate"></i> Certificate</span>
+                        </div>
+                        <button class="start-btn"><i class="fas fa-external-link-alt"></i> Start Learning</button>
+                    </div>
+
+                    <!-- Webpack Course -->
+                    <div class="glass-panel learning-card">
+                        <div class="learning-card-header">
+                            <div class="platform-icon freecodecamp"><i class="fab fa-free-code-camp"></i></div>
+                            <div class="learning-info">
+                                <h5>Webpack 5 Crash Course</h5>
+                                <span class="platform-name">freeCodeCamp • Colt Steele</span>
+                            </div>
+                        </div>
+                        <span class="missing-skill-label" style="background: rgba(245,158,11,0.1); color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> Moderate: Webpack</span>
+                        <div class="learning-meta">
+                            <span><i class="fas fa-clock"></i> 4 hours</span>
+                            <span><i class="fas fa-star" style="color: #f59e0b;"></i> 4.6/5</span>
+                            <span><i class="fas fa-dollar-sign"></i> Free</span>
+                        </div>
+                        <button class="start-btn"><i class="fas fa-external-link-alt"></i> Start Learning</button>
+                    </div>
+
+                    <!-- REST API Course -->
+                    <div class="glass-panel learning-card">
+                        <div class="learning-card-header">
+                            <div class="platform-icon youtube"><i class="fab fa-youtube"></i></div>
+                            <div class="learning-info">
+                                <h5>RESTful APIs - Complete Guide</h5>
+                                <span class="platform-name">YouTube • Traversy Media</span>
+                            </div>
+                        </div>
+                        <span class="missing-skill-label" style="background: rgba(245,158,11,0.1); color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> Moderate: REST APIs</span>
+                        <div class="learning-meta">
+                            <span><i class="fas fa-clock"></i> 3 hours</span>
+                            <span><i class="fas fa-star" style="color: #f59e0b;"></i> 4.8/5</span>
+                            <span><i class="fas fa-eye"></i> 1.2M views</span>
+                        </div>
+                        <button class="start-btn"><i class="fas fa-external-link-alt"></i> Start Learning</button>
+                    </div>
+
+                    <!-- Figma Course -->
+                    <div class="glass-panel learning-card">
+                        <div class="learning-card-header">
+                            <div class="platform-icon udemy"><i class="fas fa-play"></i></div>
+                            <div class="learning-info">
+                                <h5>Figma for Developers - UI/UX Design</h5>
+                                <span class="platform-name">Udemy • Daniel Walter Scott</span>
+                            </div>
+                        </div>
+                        <span class="missing-skill-label" style="background: rgba(245,158,11,0.1); color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> Moderate: Figma</span>
+                        <div class="learning-meta">
+                            <span><i class="fas fa-clock"></i> 10 hours</span>
+                            <span><i class="fas fa-star" style="color: #f59e0b;"></i> 4.5/5</span>
+                            <span><i class="fas fa-users"></i> 95K students</span>
+                        </div>
+                        <button class="start-btn"><i class="fas fa-external-link-alt"></i> Start Learning</button>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        function addSkill() {
+            const input = document.getElementById('newSkillInput');
+            const val = input.value.trim();
+            if (val) {
+                const tag = document.createElement('span');
+                tag.className = 'user-skill-tag';
+                tag.innerHTML = '<i class="fas fa-code"></i> ' + val + ' <span class="remove-btn" onclick="this.parentElement.remove();">&times;</span>';
+                document.getElementById('userSkills').appendChild(tag);
+                input.value = '';
+            }
+        }
+        document.getElementById('newSkillInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); addSkill(); }
+        });
+    </script>
+</body>
+</html>

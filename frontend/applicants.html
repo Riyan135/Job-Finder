@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Applicants - SmartJobFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .applicant-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+        .applicant-card:hover {
+            transform: translateY(-2px);
+        }
+        .applicant-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .applicant-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .applicant-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .status-select {
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .status-select option {
+            background-color: #1e293b; /* dark slate bg */
+            color: #f8fafc; /* light text */
+        }
+        .schedule-modal {
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+        }
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem 1.25rem;
+        }
+        .schedule-field label {
+            display: block;
+            margin-bottom: 0.45rem;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .schedule-field input,
+        .schedule-field select,
+        .schedule-field textarea {
+            width: 100%;
+            min-height: 42px;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 10px;
+            background: rgba(2, 6, 23, 0.74);
+            color: #f8fafc;
+            outline: none;
+        }
+        .schedule-field textarea {
+            min-height: 84px;
+            resize: vertical;
+        }
+        .schedule-field input:focus,
+        .schedule-field select:focus,
+        .schedule-field textarea:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.18);
+        }
+        .schedule-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        .schedule-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-width: 150px;
+            min-height: 44px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+            font-weight: 800;
+            box-shadow: 0 14px 30px rgba(79, 70, 229, 0.35);
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+        }
+        .schedule-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 38px rgba(79, 70, 229, 0.45);
+        }
+        .schedule-submit:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+        }
+        .decision-group {
+            position: relative;
+            display: inline-flex;
+            justify-content: flex-end;
+        }
+        .decision-toggle {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .decision-toggle:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .decision-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            z-index: 20;
+            min-width: 230px;
+            display: none;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: #0f172a;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+        }
+        .decision-group.open .decision-menu {
+            display: flex;
+        }
+        .decision-group.open .decision-toggle i {
+            transform: rotate(180deg);
+        }
+        .decision-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            cursor: pointer;
+            user-select: none;
+        }
+        .decision-option input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+        }
+        @media (max-width: 720px) {
+            .applicant-card,
+            .applicant-info,
+            .applicant-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="dashboard-employer.html">SmartJobFinder</a></div>
+        <div class="nav-links">
+            <a href="dashboard-employer.html">Dashboard</a>
+            <a href="post-job.html">Post a Job</a>
+            <button class="btn btn-outline" onclick="API.logout()">Logout</button>
+            <button class="theme-toggle" id="themeToggleBtn"><i class="fas fa-moon"></i></button>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 6rem;">
+        <div class="flex-between align-center" style="margin-bottom: 2rem;">
+            <h1 class="section-title">Manage Applicants</h1>
+            <div class="form-group" style="margin: 0; min-width: 250px;">
+                <select class="status-select w-full" id="jobFilter">
+                    <option value="all">All Jobs</option>
+                    <!-- Job options populated dynamically -->
+                </select>
+            </div>
+        </div>
+
+        <div id="applicantsList">
+            <div style="text-align: center; padding: 3rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                <p style="margin-top: 1rem;">Loading applicants...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Cover Letter -->
+    <div id="coverLetterModal" class="glass-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; max-width: 500px; width: 90%; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <h3>Cover Letter</h3>
+        <hr style="border-color: var(--border-color); margin: 1rem 0;">
+        <p id="coverLetterContent" style="white-space: pre-wrap; line-height: 1.6; max-height: 300px; overflow-y: auto;"></p>
+        <button class="btn btn-outline w-full" style="margin-top: 1rem;" onclick="document.getElementById('coverLetterModal').style.display='none'">Close</button>
+    </div>
+
+    <!-- Modal for Full Details -->
+    <div id="detailsModal" class="glass-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; max-width: 600px; width: 90%; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;">
+        <div class="flex-between align-center" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;"><i class="fas fa-id-card text-indigo-400"></i> Applicant Details</h3>
+            <button style="background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;" onclick="document.getElementById('detailsModal').style.display='none'">&times;</button>
+        </div>
+        <hr style="border-color: var(--border-color); margin: 1rem 0;">
+        <div id="detailsContent" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; line-height: 1.6;"></div>
+        <div style="margin-top: 1.5rem;" id="detailsCoverLetter"></div>
+        <button class="btn btn-outline w-full" style="margin-top: 1.5rem;" onclick="document.getElementById('detailsModal').style.display='none'">Close</button>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <!-- Schedule Interview Modal -->
+    <div id="scheduleModal" class="glass-panel schedule-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1000; max-width:760px; width:92%; padding:2rem; box-shadow:0 24px 70px rgba(0,0,0,0.55); max-height:90vh; overflow-y:auto;">
+        <div class="flex-between align-center" style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0;"><i class="fas fa-calendar-alt text-indigo-400"></i> Schedule Interview</h3>
+            <button onclick="document.getElementById('scheduleModal').style.display='none'" style="background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;">&times;</button>
+        </div>
+        <hr style="border-color:var(--border-color); margin:1rem 0;"/>
+        <form id="scheduleForm" onsubmit="submitSchedule(event)">
+            <input type="hidden" id="scheduleAppId" />
+            <div class="schedule-grid">
+                <div class="schedule-field">
+                    <label>Interview Type</label>
+                    <select id="interviewType" required>
+                        <option value="Online">Online</option>
+                        <option value="Offline">Offline</option>
+                        <option value="Telephonic">Telephonic</option>
+                    </select>
+                </div>
+                <div class="schedule-field">
+                    <label>Interview Round</label>
+                    <select id="interviewRound" required>
+                        <option>HR Round</option>
+                        <option>Technical Round</option>
+                        <option>Managerial Round</option>
+                        <option>Final Round</option>
+                    </select>
+                </div>
+                <div class="schedule-field">
+                    <label>Interview Date</label>
+                    <input type="date" id="interviewDate" required />
+                </div>
+                <div class="schedule-field">
+                    <label>Interview Time</label>
+                    <input type="time" id="interviewTime" required />
+                </div>
+                <div class="schedule-field">
+                    <label>Duration</label>
+                    <select id="duration" required>
+                        <option>30 min</option>
+                        <option>45 min</option>
+                        <option>60 min</option>
+                        <option>Custom</option>
+                    </select>
+                </div>
+                <div class="schedule-field">
+                    <label>Time Zone</label>
+                    <input type="text" id="timeZone" placeholder="Auto detected" readonly required />
+                </div>
+                <div class="schedule-field">
+                    <label>Interviewer Name</label>
+                    <input type="text" id="interviewerName" required />
+                </div>
+                <div class="schedule-field">
+                    <label>Interviewer Email</label>
+                    <input type="email" id="interviewerEmail" required />
+                </div>
+                <div class="schedule-field">
+                    <label>Office Address (Offline)</label>
+                    <textarea id="officeAddress" rows="2" placeholder="Auto detected from company registration" readonly></textarea>
+                </div>
+                <div class="schedule-field">
+                    <label>Meeting Platform</label>
+                    <select id="meetingPlatform">
+                        <option>Google Meet</option>
+                        <option>Zoom</option>
+                        <option>Microsoft Teams</option>
+                    </select>
+                </div>
+                <div class="schedule-field" style="grid-column:1 / -1;">
+                    <label>Additional Notes</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="schedule-actions">
+                <button type="submit" class="schedule-submit"><i class="fas fa-paper-plane"></i> Schedule</button>
+            </div>
+        </form>
+    </div>
+    <script>
+    let companyProfileCache = null;
+
+    function detectTimeZoneFromLocation(location) {
+        const loc = (location || '').toLowerCase();
+        if (!loc) return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+        if (/(india|delhi|mumbai|bengaluru|bangalore|chennai|kolkata|hyderabad|pune|ahmedabad)/i.test(loc)) {
+            return 'Asia/Kolkata';
+        }
+
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    }
+
+    async function loadCompanyProfile() {
+        if (companyProfileCache) return companyProfileCache;
+        try {
+            const res = await API.request('/company/me');
+            if (res.success && res.data) {
+                companyProfileCache = res.data;
+            }
+        } catch (err) {
+            console.error('Unable to load company profile for interview defaults:', err);
+        }
+        return companyProfileCache;
+    }
+
+    function openScheduleForm(index) {
+        const app = window.currentApplicants[index];
+        if (!app) return;
+        document.getElementById('scheduleAppId').value = app._id;
+        // Reset form fields
+        document.getElementById('scheduleForm').reset();
+        document.getElementById('scheduleModal').style.display = 'block';
+        loadCompanyProfile().then((company) => {
+            const officeAddress = company?.location || '';
+            document.getElementById('officeAddress').value = officeAddress;
+            document.getElementById('timeZone').value = detectTimeZoneFromLocation(officeAddress);
+        });
+    }
+    
+    const BACKEND_ORIGIN = API_URL.replace('/api', '');
+
+    function getResumeUrl(url) {
+        if (!url) return '';
+        if (/^https?:\/\//i.test(url)) return url;
+        const normalizedPath = url.startsWith('/') ? url : `/${url.replace(/\\/g, '/')}`;
+        return `${BACKEND_ORIGIN}${normalizedPath}`;
+    }
+
+    function openResume(url) {
+        window.open(getResumeUrl(url), '_blank', 'noopener');
+    }
+
+    const APPLICATION_STATUSES = [
+        'Applied',
+        'Under Review',
+        'Shortlisted',
+        'Interview Scheduled',
+        'Selected',
+        'Rejected'
+    ];
+
+    function renderStatusRadios(app) {
+        return APPLICATION_STATUSES.map((status) => `
+            <label class="decision-option">
+                <input
+                    type="radio"
+                    name="status-${app._id}"
+                    value="${status}"
+                    ${app.status === status ? 'checked' : ''}
+                    onchange="updateDecision(this, '${app._id}', '${status}')"
+                >
+                <span>${status}</span>
+            </label>
+        `).join('');
+    }
+
+    function toggleStatusMenu(event, button) {
+        event.stopPropagation();
+        const group = button.closest('.decision-group');
+        document.querySelectorAll('.decision-group.open').forEach((openGroup) => {
+            if (openGroup !== group) openGroup.classList.remove('open');
+        });
+        group.classList.toggle('open');
+    }
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.decision-group.open').forEach((group) => {
+            group.classList.remove('open');
+        });
+    });
+
+    async function submitSchedule(e) {
+        e.preventDefault();
+        const id = document.getElementById('scheduleAppId').value;
+        const payload = {
+            interviewType: document.getElementById('interviewType').value,
+            interviewRound: document.getElementById('interviewRound').value,
+            date: document.getElementById('interviewDate').value,
+            time: document.getElementById('interviewTime').value,
+            duration: document.getElementById('duration').value,
+            timeZone: document.getElementById('timeZone').value,
+            interviewer: {
+                name: document.getElementById('interviewerName').value,
+                email: document.getElementById('interviewerEmail').value,
+            },
+            officeAddress: document.getElementById('officeAddress').value,
+            platform: document.getElementById('meetingPlatform').value,
+            notes: document.getElementById('notes').value,
+        };
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scheduling...';
+        try {
+            const res = await API.request(`/interviews/${id}/schedule`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            if (res.success) {
+                alert('Interview scheduled successfully! Confirmation email sent to the applicant.');
+                document.getElementById('scheduleModal').style.display = 'none';
+                loadApplicants();
+            } else {
+                alert(res.error || 'Failed to schedule interview');
+            }
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Schedule';
+        }
+    }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = checkAuth();
+            if (user && user.role !== 'employer' && user.role !== 'company') {
+                window.location.href = 'index.html';
+            }
+
+            // Load Jobs for Filter
+            try {
+                const endpoint = user.role === 'company' ? '/company/jobs' : '/jobs';
+                const jobsData = await API.request(endpoint);
+                if (jobsData.success && jobsData.data) {
+                    const jobFilter = document.getElementById('jobFilter');
+                    jobsData.data.forEach(job => {
+                        // For user.role == 'company', all returned jobs belong to them
+                        // For 'employer', they need to match employer field
+                        if (user.role === 'company' || job.employer === user._id) {
+                            const option = document.createElement('option');
+                            option.value = job._id;
+                            option.textContent = job.title;
+                            jobFilter.appendChild(option);
+                        }
+                    });
+                    
+                    // Auto-select job from URL if present
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const jobId = urlParams.get('jobId');
+                    if (jobId) {
+                        jobFilter.value = jobId;
+                        loadApplicants();
+                    } else if (jobFilter.options.length > 1) {
+                        // No jobId in URL, default to first job option (index 0 is 'all', so first job is index 1)
+                        jobFilter.selectedIndex = 1;
+                        loadApplicants();
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load jobs for filter");
+            }
+
+            // Load Applicants (Mocked fetching all applications for employer's jobs for now)
+            loadApplicants();
+        });
+
+        async function loadApplicants() {
+            const list = document.getElementById('applicantsList');
+            const jobFilter = document.getElementById('jobFilter');
+            const jobId = jobFilter.value;
+            
+            if (jobId === 'all') {
+                list.innerHTML = `<div style="text-align: center; padding: 2rem; color: #aaa;">Please select a specific job to view its applicants.</div>`;
+                return;
+            }
+
+            list.innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                    <p style="margin-top: 1rem;">Loading applicants...</p>
+                </div>
+            `;
+
+            try {
+                const data = await API.getJobApplications(jobId);
+                console.log('API response data:', data);
+                if (data.success && data.data && data.data.length > 0) {
+                    window.currentApplicants = data.data; // Save for modal access
+                    list.innerHTML = data.data.map((app, index) => `
+                        <div class="glass-panel applicant-card">
+                            <div class="applicant-info">
+                                <div class="applicant-avatar">${app.applicant && app.applicant.name ? app.applicant.name.substring(0, 2).toUpperCase() : 'NA'}</div>
+                                <div>
+                                    <h3>${app.applicant ? app.applicant.name : 'Unknown User'}</h3>
+                                    <p class="text-muted" style="margin-bottom: 0.2rem;"><i class="fas fa-envelope"></i> ${app.applicant ? app.applicant.email : 'No email'}</p>
+                                    <p class="text-muted" style="font-size: 0.9rem;">Applied on: ${new Date(app.appliedAt).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+                            <div class="applicant-actions" style="flex-wrap: wrap;">
+                                                                <button class="btn btn-primary flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500/30 font-semibold py-2 px-4 rounded-lg transition text-sm flex items-center justify-center gap-1.5" onclick="viewFullDetails(${index})"><i class="fas fa-eye"></i> View Details</button> <button class="btn btn-success flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-white border border-green-500/30 font-semibold py-2 px-4 rounded-lg transition text-sm flex items-center justify-center gap-1.5" onclick="openScheduleForm(${index})"><i class="fas fa-calendar-alt"></i> Schedule Interview</button>
+                                ${app.resumeUrl ? `<button class="btn btn-outline btn-sm" onclick="openResume('${app.resumeUrl}')"><i class="fas fa-file-pdf"></i> Resume</button>` : ''}
+                                <div class="decision-group" data-status-menu>
+                                    <button type="button" class="decision-toggle" onclick="toggleStatusMenu(event, this)" title="Update status" aria-label="Update application status">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <div class="decision-menu" role="radiogroup" aria-label="Application status" onclick="event.stopPropagation()">
+                                        ${renderStatusRadios(app)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = `<div style="text-align: center; padding: 2rem; color: #aaa;">No applicants found for this job yet.</div>`;
+                }
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = `<div style="text-align: center; padding: 2rem; color: #ff6b6b;">Failed to load applicants.</div>`;
+            }
+        }
+
+        function viewFullDetails(index) {
+
+    const app = window.currentApplicants[index];
+    if (!app) return;
+    const name = app.fullName || (app.applicant ? app.applicant.name : 'N/A');
+    const email = app.email || (app.applicant ? app.applicant.email : 'N/A');
+
+    const content = document.getElementById('detailsContent');
+    content.innerHTML = `
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Name</strong> <br/>${name}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Email</strong> <br/>${email}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Mobile</strong> <br/>${app.mobile || 'N/A'}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Location</strong> <br/>${app.location || 'N/A'}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Qualification</strong> <br/>${app.qualification || 'N/A'}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Experience</strong> <br/>${app.experience ? app.experience + ' Years' : 'N/A'}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Current Salary</strong> <br/>${app.currentSalary ? app.currentSalary + ' LPA' : 'N/A'}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Expected Salary</strong> <br/>${app.expectedSalary ? app.expectedSalary + ' LPA' : 'N/A'}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Notice Period</strong> <br/>${app.noticePeriod || 'N/A'}</div>
+        <div><strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Applied On</strong> <br/>${new Date(app.appliedAt).toLocaleDateString()}</div>
+    `;
+
+    const clDiv = document.getElementById('detailsCoverLetter');
+    if (app.coverLetter) {
+        clDiv.innerHTML = '<strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Cover Letter</strong><br/><div style="white-space: pre-wrap; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: var(--radius-sm); margin-top: 0.5rem; border: 1px solid var(--border-color);">' + app.coverLetter + '</div>';
+    } else {
+        clDiv.innerHTML = '';
+    }
+
+    document.getElementById('detailsModal').style.display = 'block';
+}
+
+        async function updateDecision(radio, applicationId, status) {
+            const group = radio.closest('.decision-group');
+            const radios = group.querySelectorAll('input[type="radio"]');
+            const previousRadio = Array.from(radios).find((input) => input.defaultChecked);
+
+            radios.forEach((input) => { input.disabled = true; });
+            
+            try {
+                const res = await API.request(`/applications/${applicationId}/status`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status })
+                });
+                
+                if (res.success) {
+                    group.style.borderColor = 'var(--success)';
+                    radios.forEach((input) => {
+                        input.defaultChecked = input === radio;
+                    });
+                    group.classList.remove('open');
+                } else {
+                    throw new Error(res.error || 'Failed to update status');
+                }
+            } catch (err) {
+                alert(err.message);
+                if (previousRadio) previousRadio.checked = true;
+            } finally {
+                radios.forEach((input) => { input.disabled = false; });
+            }
+        }
+
+        document.getElementById('jobFilter').addEventListener('change', loadApplicants);
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Portal Login • SmartJobFinder</title>
+  <link rel="icon" href="img/favicon.png">
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-tr from-indigo-950 via-slate-900 to-indigo-900 text-slate-100 font-inter px-4">
+
+  <div class="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold tracking-tight text-white mb-2">Company Login</h1>
+      <p class="text-slate-300">Access your recruiter workspace.</p>
+    </div>
+
+    <!-- Error/Success Alerts -->
+    <div id="alertMessage" class="hidden mb-6 p-4 rounded-lg flex items-center gap-3"></div>
+
+    <form id="loginForm" class="space-y-6">
+      <div>
+        <label class="block text-sm font-semibold text-slate-200 mb-2">Company Email</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <i class="fas fa-envelope"></i>
+          </span>
+          <input type="email" id="email" name="email" required placeholder="hr@company.com" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 pl-10 pr-3 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-200 mb-2">Password</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <i class="fas fa-lock"></i>
+          </span>
+          <input type="password" id="password" name="password" required placeholder="••••••••" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 pl-10 pr-3 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-sm">
+        <a href="company-register.html" class="text-indigo-400 hover:text-indigo-300 font-semibold transition hover:underline">New company? Register</a>
+        <a href="#" class="text-slate-400 hover:text-slate-300 transition hover:underline">Forgot password?</a>
+      </div>
+
+      <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
+        Sign In
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const alertMessage = document.getElementById('alertMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function showAlert(msg, isSuccess = false) {
+      alertMessage.classList.remove('hidden', 'bg-red-500/20', 'border-red-500/40', 'text-red-300', 'bg-emerald-500/20', 'border-emerald-500/40', 'text-emerald-300');
+      if (isSuccess) {
+        alertMessage.classList.add('bg-emerald-500/20', 'border', 'border-emerald-500/40', 'text-emerald-300');
+        alertMessage.innerHTML = `<i class="fas fa-check-circle"></i> <span>${msg}</span>`;
+      } else {
+        alertMessage.classList.add('bg-red-500/20', 'border', 'border-red-500/40', 'text-red-300');
+        alertMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> <span>${msg}</span>`;
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+      submitBtn.disabled = true;
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('http://localhost:5000/api/company/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const contentType = res.headers.get('content-type') || '';
+        const result = contentType.includes('application/json')
+          ? await res.json()
+          : { success: false, error: await res.text() };
+
+        if (res.ok && result.success) {
+          localStorage.setItem('token', result.token);
+          localStorage.setItem('user', JSON.stringify(result.user));
+          showAlert('Login successful! Redirecting...', true);
+          setTimeout(() => {
+            window.location.href = 'company-dashboard.html';
+          }, 1500);
+        } else {
+          showAlert(result.error || `Login failed (${res.status}).`);
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert('Could not reach the login server. Please try again.');
+      } finally {
+        submitBtn.innerHTML = 'Sign In';
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

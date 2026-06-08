@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post a Job • SmartJobFinder</title>
+  <link rel="icon" href="img/favicon.png">
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body class="min-h-screen bg-gradient-to-tr from-indigo-950 via-slate-900 to-indigo-900 text-slate-100 font-inter px-4 py-8">
+
+  <div class="max-w-3xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-8">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-6 mb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white mb-1">Post a New Job</h1>
+        <p class="text-slate-300">Fill in the job details to reach top candidates.</p>
+      </div>
+      <a href="company-dashboard.html" class="text-indigo-400 hover:text-indigo-300 font-semibold transition flex items-center gap-1.5 text-sm">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+
+    <form id="jobForm" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Job Title</label>
+          <input type="text" name="title" required placeholder="e.g. Senior Node.js Developer" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Job Location</label>
+          <input type="text" name="location" required placeholder="e.g. Pune, Remote, Hybrid" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-200 mb-2">Job Description</label>
+        <textarea name="description" placeholder="Describe the responsibilities, project scope, and daily tasks..." rows="4" required 
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Required Skills (Comma separated)</label>
+          <input type="text" name="requiredSkills" required placeholder="e.g. React, Node.js, MongoDB" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Qualification Required</label>
+          <input type="text" name="qualification" placeholder="e.g. B.Tech / MCA in Computer Science" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Experience Required</label>
+          <input type="text" name="experience" placeholder="e.g. 2+ years" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Salary Range</label>
+          <input type="text" name="salaryRange" placeholder="e.g. 5,00,000 - 8,00,000 LPA" 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Job Type</label>
+          <select name="jobType" required 
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+            <option value="" disabled selected>Select Job Type</option>
+            <option value="Full-Time">Full-Time</option>
+            <option value="Part-Time">Part-Time</option>
+            <option value="Internship">Internship</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Number of Vacancies</label>
+          <input type="number" name="vacancies" placeholder="1" min="1" required 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold text-slate-200 mb-2">Application Deadline</label>
+          <input type="date" name="deadline" required 
+                 class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-200 mb-2">Additional Requirements</label>
+        <textarea name="additional" placeholder="Any certification or key prerequisites..." rows="2" 
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-200 mb-2">Company Benefits</label>
+        <textarea name="benefits" placeholder="Medical, Equity, Work from Home allowance..." rows="2" 
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea>
+      </div>
+
+      <div class="pt-4">
+        <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
+          Publish Job Listing
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) { window.location.href = 'company-login.html'; }
+    
+    document.getElementById('jobForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+      submitBtn.disabled = true;
+
+      const data = new FormData(e.target);
+      const payload = {};
+      data.forEach((value, key) => {
+        if (key === 'requiredSkills') payload[key] = value.split(',').map(s => s.trim());
+        else payload[key] = value;
+      });
+
+      try {
+        const res = await fetch('http://localhost:5000/api/company/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+        if (res.ok || result.success) {
+          alert('Job posted successfully!');
+          window.location.href = 'company-dashboard.html';
+        } else {
+          alert(result.error || 'Failed to post job');
+        }
+      } catch (err) { 
+        console.error(err); 
+        alert('Network error. Please try again.'); 
+      } finally {
+        submitBtn.innerHTML = 'Publish Job Listing';
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo" style="margin-bottom: 2rem; padding-left: 1rem;">EmployerPortal</div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><i class="fas fa-home"></i> Overview</a></li>
+                <li><a href="#"><i class="fas fa-plus-circle"></i> Post a Job</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> Manage Jobs</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> View Applicants</a></li>
+                <li><a href="#"><i class="fas fa-building"></i> Company Profile</a></li>
+            </ul>
+            <ul class="sidebar-menu" style="flex: 0;">
+                <li><button class="theme-toggle" id="themeToggleBtn" style="padding-left:1rem;"><i class="fas fa-moon"></i> Theme</button></li>
+                <li><a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <h2>Employer Dashboard</h2>
+                <button class="btn btn-primary">Post New Job</button>
+            </header>
+
+            <div class="stat-grid">
+                <div class="glass-panel stat-card">
+                    <h3>5</h3>
+                    <p>Active Jobs</p>
+                </div>
+                <div class="glass-panel stat-card">
+                    <h3>42</h3>
+                    <p>Total Applications</p>
+                </div>
+                <div class="glass-panel stat-card">
+                    <h3>10</h3>
+                    <p>Shortlisted Candidates</p>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <h3>Recent Applications</h3>
+                <p style="margin-top: 1rem; color: #888;">No recent applications.</p>
+            </div>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>
