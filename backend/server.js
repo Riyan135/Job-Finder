@@ -91,11 +91,10 @@ const PORT = process.env.PORT || 5001;
 const startServer = async () => {
   try {
     await ensureDB();
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (err) {
-    console.error('Server not started because MongoDB is unavailable.');
-    process.exit(1);
+    console.warn('MongoDB connection failed, starting server without DB.');
   }
+  app.listen(PORT, () => console.log(`Server running on port ${PORT} (DB optional)`));
 };
 
 if (require.main === module) {
