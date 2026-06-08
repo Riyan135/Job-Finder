@@ -16,6 +16,23 @@ app.use(express.json());
 // Enable CORS
 app.use(cors());
 
+let dbReady;
+const ensureDB = () => {
+  if (!dbReady) {
+    dbReady = connectDB();
+  }
+  return dbReady;
+};
+
+app.use('/api', async (req, res, next) => {
+  try {
+    await ensureDB();
+    next();
+  } catch (err) {
+    res.status(503).json({ success: false, error: 'Database unavailable' });
+  }
+});
+
 // Route files
 const authRoutes = require('./routes/authRoutes');
 const jobRoutes = require('./routes/jobRoutes');
@@ -60,8 +77,12 @@ app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
 
 // Create uploads directory for resume uploads if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads', 'resumes');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn(`Warning: unable to create uploads directory (${err.message}).`);
 }
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -69,7 +90,7 @@ const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
   try {
-    await connectDB();
+    await ensureDB();
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (err) {
     console.error('Server not started because MongoDB is unavailable.');
@@ -77,4 +98,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;
