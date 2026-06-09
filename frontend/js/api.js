@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://job-finder-production-e5a4.up.railway.app/api';
+
 
 class API {
     static getToken() {
