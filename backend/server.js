@@ -19,7 +19,10 @@ app.use(cors());
 let dbReady;
 const ensureDB = () => {
   if (!dbReady) {
-    dbReady = connectDB();
+    dbReady = connectDB().catch(err => {
+      dbReady = null;
+      throw err;
+    });
   }
   return dbReady;
 };
